@@ -96,9 +96,8 @@ export function hireEmployeeUnderBossName(
   employee: Employee,
   bossName: string
 ): void {
-  // employee.name = requireUniqueName(tree, employee.name);
-
   const boss = getEmployeeNodeByNameBFS(tree, bossName);
+
   if (boss) {
     employee.id = getUniqueId();
     boss.descendants.push(new TreeNode(employee));
@@ -215,9 +214,16 @@ export function promoteEmployee(tree: TreeNode, employeeName: string): void {
 
   if (employee) {
     boss = getEmployeeNodeByNameBFS(tree, employee.value.boss) as TreeNode;
+    const coworkers = boss.descendants;
 
+    // update (former) boss and the promoted employee
     swapSubordinates(boss, employee);
     updateBosses(tree, boss, employee);
+
+    // also update (former) boss's direct reports to reflect new boss
+    for (let i = 0; i < coworkers.length; i++) {
+      coworkers[i].value.boss = employee.value.name;
+    }
 
     console.log(
       `[promoteEmployee]: Promoted ${employee.value.name} and made ${boss.value.name} their subordinate`

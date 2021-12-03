@@ -1,5 +1,5 @@
 import { employees } from "./employees.json";
-import { getBoss, getSubordinates } from "./getEmployees";
+import { getBoss, getSubordinates, findLowestEmployee } from "./getEmployees";
 import {
   TreeNode,
   replaceEmailsWithNames,
@@ -44,6 +44,8 @@ function main() {
   console.log("\n");
 
   hireEmployeeUnderBossId(tree, newEmployee2, 1);
+
+  findLowestEmployee(tree);
 }
 
 main();

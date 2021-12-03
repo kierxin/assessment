@@ -100,7 +100,42 @@ export function getSubordinates(
  * Finds and returns the lowest-ranking employee and the tree node's depth index.
  *
  * @param {TreeNode} tree
- * @param {string} employeeName
  * @returns {TreeNode}
  */
-function findLowestEmployee() {}
+export function findLowestEmployee(tree: TreeNode) {
+  let lowestLeaf: TreeNode = tree;
+  let deepestDepth: number = 1;
+
+  const queue = [tree];
+
+  while (queue.length) {
+    const currentNode = queue.shift() as TreeNode;
+    lowestLeaf = currentNode;
+
+    if (currentNode.descendants.length > 0) {
+      queue.push(...currentNode.descendants);
+    }
+  }
+
+  deepestDepth = findHeight(tree, lowestLeaf) as number;
+
+  console.log(
+    `The lowest-ranking employee is ${lowestLeaf.value.name}, at ${deepestDepth} ranks down in the organization`
+  );
+  return [lowestLeaf, deepestDepth];
+}
+
+function findHeight(
+  tree: TreeNode,
+  leaf: TreeNode,
+  currentHeight: number = 1,
+  height: number[] = []
+) {
+  if (tree.value.name === leaf.value.name) height.push(currentHeight);
+
+  tree.descendants.forEach((node) => {
+    findHeight(node, leaf, currentHeight + 1, height);
+  });
+
+  return height[0];
+}

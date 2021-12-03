@@ -8,11 +8,11 @@
 
 ## Logic/Style Decisions / Reasoning
 - Use closure to generate a unique ID for every employee; otherwise, each employee's name would have to be unique since the program would rely on names to identify who an employee's boss is
-- Use BFS (breadth-first search) to traverse tree when searching for a boss or employee since the company is small (target node is probably fairly close to the root) 
-- Use DFS (depth-first search) to find lowest employee since the node isn't near the top of the tree (especially if the company hierarchy gains even more levels
+- Use BFS (breadth-first search) to traverse tree since the company is small (target node is probably fairly close to the root) 
 - If the company hierarchy grows very wide, BFS will become more memory intensive so in that case it would be good to switch to DFS
 
 ## Given More Time, I Would...
+- Refactor functions that rely upon an employee's name to rely on the employee's ID instead since IDs are unique, unlike names
 - Create a user interface so the user can choose an action (hireEmployee, fireEmployee, getBoss, etc) and arguments for the action to be executed
 
 ## Time Complexities
