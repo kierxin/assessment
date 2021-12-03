@@ -73,9 +73,7 @@ export function generateCompanyStructure(employees: Array<Employee>): TreeNode {
   for (let i = 1; i < employees.length; i++) {
     const boss = getEmployeeNodeByNameBFS(tree, employees[i].boss);
     if (boss) {
-      // const id = generateUniqueId();
       employees[i].id = getUniqueId();
-
       boss.descendants.push(new TreeNode(employees[i]));
     }
   }
@@ -116,8 +114,6 @@ export function hireEmployeeUnderBossId(
   employee: Employee,
   bossId: number
 ): void {
-  // employee.name = requireUniqueName(tree, employee.name);
-
   const boss = getEmployeeNodeByIdBFS(tree, bossId);
   if (boss) {
     employee.id = getUniqueId();
