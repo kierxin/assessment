@@ -1,6 +1,15 @@
-// Main code goes here
+import { employees } from "./employees.json";
+import {
+  replaceEmailsWithNames,
+  generateCompanyStructure,
+} from "./manageEmployees";
+
 function main() {
-    console.log('main')
+  replaceEmailsWithNames(employees);
+  generateCompanyStructure(employees);
+
+  console.log("\n");
+
 }
 
-main()
+main();

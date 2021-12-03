@@ -1,17 +1,81 @@
+interface Employee {
+  name: string;
+  jobTitle: string;
+  boss: string | null;
+  salary: string;
+}
+
 class TreeNode {
-    constructor(value = null) {
-        this.value = value
-        this.descendants = []
-    }
+  value: Employee;
+  descendants: Array<TreeNode>;
+
+  constructor(value: Employee) {
+    this.value = value;
+    this.descendants = [];
+  }
 }
 
 /**
- * Normalizes the provided JSON file and generates a tree of employees.
+ * Normalizes the provided JSON file.
+ *
+ * @param {Object[]} employees array of employees
+ */
+
+export function replaceEmailsWithNames(employees: Array<Employee>) {
+  if (employees.length < 1) return {};
+  console.log("Normalizing JSON file...");
+
+  employees.forEach((employee) => {
+    const name = employee.name;
+
+    if (name.includes("@")) {
+      const locationOfAtSymbol = name.indexOf("@");
+      const parsedName = name.slice(0, locationOfAtSymbol);
+      employee.name = parsedName[0].toUpperCase() + parsedName.slice(1);
+    }
+  });
+
+  return;
+}
+
+/**
+ * Generates a tree of employees.
  *
  * @param {Object[]} employees array of employees
  * @returns {TreeNode}
  */
-function generateCompanyStructure() {}
+
+export function generateCompanyStructure(employees: Array<Employee>) {
+  console.log("Generating employee tree...");
+
+  // initialize tree
+  if (employees.length < 1) return {};
+  const firstEmployee = new TreeNode(employees[0]);
+  let tree: Array<TreeNode> = [firstEmployee];
+
+  // add each employee to tree, starting after CEO
+  for (let i = 1; i < employees.length; i++) {
+    const boss = bossNodeFromBFS(tree, employees[i].boss);
+    if (boss) boss.descendants.push(new TreeNode(employees[i]));
+  }
+
+  return tree;
+}
+
+function bossNodeFromBFS(tree: Array<TreeNode>, boss: string | null) {
+  const queue = [tree[0]];
+
+  while (queue.length > 0) {
+    const currentNode = queue.shift();
+
+    if (currentNode) {
+      if (currentNode.value.name === boss) return currentNode;
+      queue.push(...currentNode.descendants);
+    }
+  }
+
+  return;
+}
 
 /**
  * Adds a new employee to the team and places them under a specified boss.
