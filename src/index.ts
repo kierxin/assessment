@@ -4,27 +4,34 @@ import {
   TreeNode,
   replaceEmailsWithNames,
   generateCompanyStructure,
-  hireEmployee,
+  hireEmployeeUnderBossName,
+  hireEmployeeUnderBossId,
   fireEmployee,
   promoteEmployee,
   demoteEmployee,
 } from "./manageEmployees";
 
-const newEmployee = {
+const newEmployee1 = {
   name: "Jeb",
   jobTitle: "Head of Operations",
   boss: "Sarah",
   salary: "130000",
 };
 
+const newEmployee2 = {
+  name: "Janna",
+  jobTitle: "CTO",
+  boss: "Sarah",
+  salary: "180000",
+};
+
 function main() {
   replaceEmailsWithNames(employees);
-  // generateCompanyStructure(employees)
   const tree: TreeNode = generateCompanyStructure(employees);
 
   console.log("\n");
 
-  hireEmployee(tree, newEmployee, "Sarah");
+  hireEmployeeUnderBossName(tree, newEmployee1, "Sarah");
   fireEmployee(tree, "Alicia");
   promoteEmployee(tree, "Jared");
   demoteEmployee(tree, "Xavier", "Maria");
@@ -33,6 +40,10 @@ function main() {
 
   getBoss(tree, "Bill");
   getSubordinates(tree, "Maria");
+
+  console.log("\n");
+
+  hireEmployeeUnderBossId(tree, newEmployee2, 1);
 }
 
 main();

@@ -1,8 +1,14 @@
+import {
+  getEmployeeNodeByNameBFS,
+  getEmployeeNodeByIdBFS,
+} from "./getEmployees";
+
 interface Employee {
   name: string;
   jobTitle: string;
   boss: string | null;
   salary: string;
+  id?: number;
 }
 
 export class TreeNode {
@@ -38,6 +44,15 @@ export function replaceEmailsWithNames(employees: Array<Employee>): void {
   return;
 }
 
+// use closure to track current highest ID number; ensure no repeat IDs
+const generateUniqueId = (idCount: number = 0) => {
+  return function createClosureForID(): number {
+    idCount += 1;
+    return idCount;
+  };
+};
+const getUniqueId = generateUniqueId();
+
 /**
  * Generates a tree of employees.
  *
@@ -49,34 +64,23 @@ export function generateCompanyStructure(employees: Array<Employee>): TreeNode {
   console.log("Generating employee tree...");
 
   // initialize tree
+  const root = employees[0];
+  root.id = getUniqueId();
   const firstEmployee = new TreeNode(employees[0]);
   let tree: TreeNode = firstEmployee;
 
   // add each employee to tree, starting after CEO
   for (let i = 1; i < employees.length; i++) {
-    const boss = nodeFromBFS(tree, employees[i].boss);
-    if (boss) boss.descendants.push(new TreeNode(employees[i]));
-  }
+    const boss = getEmployeeNodeByNameBFS(tree, employees[i].boss);
+    if (boss) {
+      // const id = generateUniqueId();
+      employees[i].id = getUniqueId();
 
-  return tree;
-}
-
-export function nodeFromBFS(
-  tree: TreeNode,
-  boss: string | null
-): TreeNode | undefined {
-  const queue = [tree];
-
-  while (queue.length > 0) {
-    const currentNode = queue.shift();
-
-    if (currentNode) {
-      if (currentNode.value.name === boss) return currentNode;
-      queue.push(...currentNode.descendants);
+      boss.descendants.push(new TreeNode(employees[i]));
     }
   }
 
-  return;
+  return tree;
 }
 
 /**
@@ -87,18 +91,19 @@ export function nodeFromBFS(
  * @param {string} bossName
  * @returns {void}
  */
-export function hireEmployee(
+export function hireEmployeeUnderBossName(
   tree: TreeNode,
   employee: Employee,
   bossName: string
 ): void {
-  employee.name = requireUniqueName(tree, employee.name);
+  // employee.name = requireUniqueName(tree, employee.name);
 
-  const boss = nodeFromBFS(tree, bossName);
+  const boss = getEmployeeNodeByNameBFS(tree, bossName);
   if (boss) {
+    employee.id = getUniqueId();
     boss.descendants.push(new TreeNode(employee));
     console.log(
-      `[hireEmployee] Added new employee (${employee.name}) with ${bossName} as their boss`
+      `[hireEmployeeUnderBossName] Added new employee (${employee.name}) with ${bossName} as their boss`
     );
   } else {
     console.log("No employee exists with the specified boss name");
@@ -107,13 +112,25 @@ export function hireEmployee(
   return;
 }
 
-function requireUniqueName(tree: TreeNode, name: string): string {
-  if (!nodeFromBFS(tree, name)) {
-    return name;
+export function hireEmployeeUnderBossId(
+  tree: TreeNode,
+  employee: Employee,
+  bossId: number
+): void {
+  // employee.name = requireUniqueName(tree, employee.name);
+
+  const boss = getEmployeeNodeByIdBFS(tree, bossId);
+  if (boss) {
+    employee.id = getUniqueId();
+    boss.descendants.push(new TreeNode(employee));
+    console.log(
+      `[hireEmployeeUnderBossId] Added new employee (${employee.name}) with employee #${bossId} as their boss`
+    );
   } else {
-    // probably create a unique name:
-    return name + Math.floor(Math.random() * 1000);
+    console.log("No employee exists with the specified boss name");
   }
+
+  return;
 }
 
 /**
@@ -125,11 +142,11 @@ function requireUniqueName(tree: TreeNode, name: string): string {
  * @returns {void}
  */
 export function fireEmployee(tree: TreeNode, name: string): void {
-  const employee = nodeFromBFS(tree, name);
+  const employee = getEmployeeNodeByNameBFS(tree, name);
   let boss: TreeNode | undefined;
 
   if (employee) {
-    boss = nodeFromBFS(tree, employee.value.boss);
+    boss = getEmployeeNodeByNameBFS(tree, employee.value.boss);
 
     // determine replacement if there are any descendants
     let inheritor: TreeNode | undefined;
@@ -190,11 +207,14 @@ function selectReplacement(employee: TreeNode): TreeNode | undefined {
  * @returns {void}
  */
 export function promoteEmployee(tree: TreeNode, employeeName: string): void {
-  const employee: TreeNode | undefined = nodeFromBFS(tree, employeeName);
+  const employee: TreeNode | undefined = getEmployeeNodeByNameBFS(
+    tree,
+    employeeName
+  );
   let boss: TreeNode | undefined;
 
   if (employee) {
-    boss = nodeFromBFS(tree, employee.value.boss) as TreeNode;
+    boss = getEmployeeNodeByNameBFS(tree, employee.value.boss) as TreeNode;
 
     swapSubordinates(boss, employee);
     updateBosses(tree, boss, employee);
@@ -227,7 +247,7 @@ function updateBosses(
   boss: TreeNode,
   employee: TreeNode
 ): void {
-  const bossOfBoss = nodeFromBFS(tree, boss.value.boss);
+  const bossOfBoss = getEmployeeNodeByNameBFS(tree, boss.value.boss);
   const bossOfBossName = boss.value.boss;
 
   if (bossOfBoss) {
@@ -257,8 +277,14 @@ export function demoteEmployee(
   employeeName: string,
   subordinateName: string
 ): void {
-  const employee: TreeNode | undefined = nodeFromBFS(tree, employeeName);
-  const subordinate: TreeNode | undefined = nodeFromBFS(tree, subordinateName);
+  const employee: TreeNode | undefined = getEmployeeNodeByNameBFS(
+    tree,
+    employeeName
+  );
+  const subordinate: TreeNode | undefined = getEmployeeNodeByNameBFS(
+    tree,
+    subordinateName
+  );
 
   if (!employee || !subordinate) {
     console.log("Error: one or both employees do not exist");

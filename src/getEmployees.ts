@@ -1,4 +1,40 @@
-import { TreeNode, nodeFromBFS } from "./manageEmployees";
+import { TreeNode } from "./manageEmployees";
+
+export function getEmployeeNodeByNameBFS(
+  tree: TreeNode,
+  boss: string | null
+): TreeNode | undefined {
+  const queue = [tree];
+
+  while (queue.length > 0) {
+    const currentNode = queue.shift();
+
+    if (currentNode) {
+      if (currentNode.value.name === boss) return currentNode;
+      queue.push(...currentNode.descendants);
+    }
+  }
+
+  return;
+}
+
+export function getEmployeeNodeByIdBFS(
+  tree: TreeNode,
+  id: number
+): TreeNode | undefined {
+  const queue = [tree];
+
+  while (queue.length > 0) {
+    const currentNode = queue.shift();
+
+    if (currentNode) {
+      if (currentNode.value.id === id) return currentNode;
+      queue.push(...currentNode.descendants);
+    }
+  }
+
+  return;
+}
 
 /**
  * Given an employee, will find the node above (if any).
@@ -11,10 +47,10 @@ export function getBoss(
   tree: TreeNode,
   employeeName: string
 ): TreeNode | undefined {
-  const employee = nodeFromBFS(tree, employeeName);
+  const employee = getEmployeeNodeByNameBFS(tree, employeeName);
   let boss: TreeNode | undefined;
 
-  if (employee) boss = nodeFromBFS(tree, employee.value.boss);
+  if (employee) boss = getEmployeeNodeByNameBFS(tree, employee.value.boss);
 
   if (boss) {
     console.log(`[getBoss]: ${employeeName}'s boss is ${boss.value.name}`);
@@ -38,7 +74,10 @@ export function getSubordinates(
   employeeName: string
 ): Array<TreeNode> {
   let subordinates: Array<TreeNode> = [];
-  const employee: TreeNode | undefined = nodeFromBFS(tree, employeeName);
+  const employee: TreeNode | undefined = getEmployeeNodeByNameBFS(
+    tree,
+    employeeName
+  );
 
   if (employee) {
     subordinates = employee.descendants;

@@ -7,14 +7,13 @@
 4. Run `yarn start` in terminal
 
 ## Logic/Style Decisions / Reasoning
+- Use closure to generate a unique ID for every employee; otherwise, each employee's name would have to be unique since the program would rely on names to identify who an employee's boss is
 - Use BFS (breadth-first search) to traverse tree when searching for a boss or employee since the company is small (target node is probably fairly close to the root) 
 - Use DFS (depth-first search) to find lowest employee since the node isn't near the top of the tree (especially if the company hierarchy gains even more levels
 - If the company hierarchy grows very wide, BFS will become more memory intensive so in that case it would be good to switch to DFS
-- Require new employees to be registered with a name that no current employee already has, since employees' "boss" values should be unique
 
 ## Given More Time, I Would...
-- Create some form of unique identifier for each employee, so that employee names don't have to be unique (currently, if the names aren't all unique, then the program can't identify which boss an employee reports to if multiple people share the same name)
-- Create a user interface so the user can choose an action (hireEmployee, fireEmployee, getBoss, etc) and arguments for the action
+- Create a user interface so the user can choose an action (hireEmployee, fireEmployee, getBoss, etc) and arguments for the action to be executed
 
 ## Time Complexities
 (Bonus) What is the time complexity of each function in your code?
